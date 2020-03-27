@@ -1,0 +1,511 @@
+<html>
+
+<head>
+<meta http-equiv="Content-Type"
+content="text/html; charset=utf-8">
+<meta name="GENERATOR" content="Microsoft FrontPage Express 2.0">
+<title>Test</title>
+</head>
+
+<body>
+
+<h1>General purpose and how to convert</h1>
+
+<p>The HTML2MD is the simple converter from HTML to Markdown. It
+allows using many simple WYSIWYG or WYSIWYM HTML editors to mage
+Markdown documents. This script was tested using Microsoft
+FrontPage Express, which is freware and very simple WYSIWYG HTML
+editor and has enough features to mahe these documents. You can
+use any WYSIWYG or WYSIWYM HTML editor to make Markdown files by
+WYSIWYG/WYSIWYM approach, using HTML file as document source.</p>
+
+<p>To convert HTML file, define <strong>SCRIPT</strong> tag with
+source as <strong>html2md.js</strong> at the end of the HTML
+file. In the browser there will be displayed Markdown source text
+istead of HTML content. All the text elements will have escape
+sequences at the control characters.</p>
+
+<h1>Tag conversion</h1>
+
+<p>The conversion is based on tag parsing. The HTML doctype
+definition and the all code outsode the BODY tag is ignored. When
+the HTML document contains non-ANSI characters, is should be
+saved using UTF-8 encoding.</p>
+
+<p>The following tags are parsed in conversion, the tag
+attributes are ignored:</p>
+
+<table border="1">
+    <tr>
+        <td>Tag name</td>
+        <td>Markdown equivalent</td>
+        <td>Parse inner HTML</td>
+    </tr>
+    <tr>
+        <td>P</td>
+        <td>Paragraph</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>H1</td>
+        <td>Header 1</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>H2</td>
+        <td>Header 2</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>H3</td>
+        <td>Header 3</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>H4</td>
+        <td>Header 4</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>H5</td>
+        <td>Header 5</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>H6</td>
+        <td>Header 6</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>BR</td>
+        <td>Line break in one paragraph</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>STRONG, B</td>
+        <td>Bold text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>EM, I</td>
+        <td>Italic text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>STRIKE, S</td>
+        <td>Strikethrough text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td>Link</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>IMG</td>
+        <td>Image</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>HR</td>
+        <td>Horizontal rule</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>TT</td>
+        <td>Code inside the text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>PRE</td>
+        <td>Code outside the paragraph</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>TABLE</td>
+        <td>Table or quote</td>
+        <td>Special (see below)</td>
+    </tr>
+    <tr>
+        <td>BLOCKQUOTE</td>
+        <td>Quote</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>UL</td>
+        <td>Unordered list</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>OL</td>
+        <td>Ordered list</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>DL</td>
+        <td>Term definition list</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>DT</td>
+        <td>Term phrase in definition list</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>DD</td>
+        <td>Term definition in definition list</td>
+        <td>Yes</td>
+    </tr>
+</table>
+
+<p>The following tags are ignored (not has an Markdown
+equivalent), but the inner HTML will be parsed.</p>
+
+<ul>
+    <li>U</li>
+    <li>FONT</li>
+    <li>SPAN</li>
+</ul>
+
+<p>The other tags, which are not mentioned above, are ignored,
+when this tag has inner HTML, these HTML will also be ignored.
+The converter does not validate input HTML.</p>
+
+<h1>Table conversion</h1>
+
+<p>When the has more than one row or has more than one column,
+this table will be converted into Markdown table. The TD and TH
+cell tags hase exactly the same meaning. The alignment of the
+TD/TH tags in the first row determines alignment for the whole
+column (the Markdown can not align one cell, it can align whole
+column only). Alignment of the other rows than the first row is
+ignored. The Microsoft FrontPage Express sets left alignment for
+TD cell and center alignment for the TH cell, so this application
+does not save alignment attribute when the cell is alignment to
+left (alignment of objects inside the cell is ignored). This
+allows to combine TD and TH tags in one table, in some cases this
+combination is forced, depending on used WYSIWYG editor.</p>
+
+<p>Inside the table, tag conversion slighty differs than tag
+conversion outside the table:</p>
+
+<table border="1">
+    <tr>
+        <td>Tag name</td>
+        <td>Markdown equivalent</td>
+        <td>Parse inner HTML</td>
+    </tr>
+    <tr>
+        <td>BR</td>
+        <td>Print &lt;BR&gt; in Markdown text to force line break
+        inside cell</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>STRONG, B</td>
+        <td>Bold text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>EM, I</td>
+        <td>Italic text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>STRIKE, S</td>
+        <td>Strikethrough text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td>Link</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>IMG</td>
+        <td>Image</td>
+        <td>No</td>
+    </tr>
+    <tr>
+        <td>TT</td>
+        <td>Code inside the text</td>
+        <td>Yes</td>
+    </tr>
+    <tr>
+        <td>PRE</td>
+        <td>Code outside the paragraph</td>
+        <td>Yes</td>
+    </tr>
+</table>
+
+<p>The following tags inside the table are ignored, but the inner
+HTML will be parsed:</p>
+
+<ul>
+    <li>P</li>
+    <li>H1</li>
+    <li>H2</li>
+    <li>H3</li>
+    <li>H4</li>
+    <li>H5</li>
+    <li>H6</li>
+    <li>U</li>
+    <li>FONT</li>
+    <li>SPAN</li>
+</ul>
+
+<p>The other tags, which are not mentioned above, are ignored.
+The column spanning and cell spanning is not supported due to
+Markdown limitations.</p>
+
+<h2>Table examples</h2>
+
+<p>The header text is shorter than the longest text.</p>
+
+<table border="1">
+    <tr>
+        <th>Not aligned</th>
+        <th align="left">Left align</th>
+        <td align="center">Center align</td>
+        <td align="right">Right align</td>
+    </tr>
+    <tr>
+        <td>A</td>
+        <td>B</td>
+        <td>C</td>
+        <td>D</td>
+    </tr>
+    <tr>
+        <td>AAA</td>
+        <td>BBB</td>
+        <td>CCC</td>
+        <td>DDD</td>
+    </tr>
+</table>
+
+<p>The header text is longer than the longest text.</p>
+
+<table border="1">
+    <tr>
+        <th>None</th>
+        <th align="left">Left</th>
+        <td align="center">Center</td>
+        <td align="right">Right</td>
+    </tr>
+    <tr>
+        <td>AAAAAAAAAA</td>
+        <td>BBBBBBBBBB</td>
+        <td>CCCCCCCCCC</td>
+        <td>DDDDDDDDDD</td>
+    </tr>
+    <tr>
+        <td>AAA</td>
+        <td>BBB</td>
+        <td>CCC</td>
+        <td>DDD</td>
+    </tr>
+</table>
+
+<p>The format text abilities</p>
+
+<table border="1">
+    <tr>
+        <td>Tag</td>
+        <td>Example</td>
+    </tr>
+    <tr>
+        <td>BR</td>
+        <td>First line<br>
+        Second line</td>
+    </tr>
+    <tr>
+        <td>STRONG</td>
+        <td><strong>Bold text</strong></td>
+    </tr>
+    <tr>
+        <td>EM</td>
+        <td><em>Italic text</em></td>
+    </tr>
+    <tr>
+        <td>TT</td>
+        <td>The <font face="Times New Roman"><tt>code</tt></font>
+        example</td>
+    </tr>
+    <tr>
+        <td>PRE</td>
+        <td><pre>The code example</pre>
+        </td>
+    </tr>
+</table>
+
+<p>Inside table cell, when PRE is used, the line breaks inside
+the PRE will be replaced into spaces.</p>
+
+<h1>Quote</h1>
+
+<p>The quote can be defined by TABLE, which has only one row and
+only one column, or by BLOCKQUOTE tag.</p>
+
+<h2>Quote by TABLE</h2>
+
+<p>Text before quote</p>
+
+<table border="1">
+    <tr>
+        <td>Text at the beginning of quote<table border="1">
+            <tr>
+                <td>Nested quote</td>
+            </tr>
+        </table>
+        <p>Text at the ending of quote</p>
+        </td>
+    </tr>
+</table>
+
+<p>Text after quote</p>
+
+<h2>Quote by BLOCKQUOTE</h2>
+
+<p>Text before quote</p>
+
+<blockquote>
+    <p>Text at the beginning of quote</p>
+    <blockquote>
+        <p>Nested quote</p>
+    </blockquote>
+    <p>Text at the ending of quote</p>
+</blockquote>
+
+<p>Text after quote</p>
+
+<h2>Remarks</h2>
+
+<p>In the quote element (both by TABLE cell and by BLOCKQUOTE
+tag), the every element must be inside HTML tag, for example,
+inside the P tag. The text without tag will be ignored. Some
+WYSIWYG editors can make the first line without tag and the
+second line in the same cell will treat as paragraph (inside P).
+In such case, the first line will be ignored, but the other lines
+will be parsed.</p>
+
+<h1>The other format examples</h1>
+
+<h2>Unordered list</h2>
+
+<p>Text before the list</p>
+
+<ul>
+    <li>First<ul>
+            <li>First-first</li>
+            <li>First-second<ul>
+                    <li>First-second-first</li>
+                    <li>First-second-second</li>
+                </ul>
+            </li>
+            <li>First-third</li>
+        </ul>
+    </li>
+    <li>Second<ul>
+            <li>Second-first</li>
+            <li>Second-second</li>
+        </ul>
+    </li>
+    <li>Third</li>
+</ul>
+
+<p>Text after the list</p>
+
+<h2>Ordered list</h2>
+
+<p>Text before the list</p>
+
+<ol>
+    <li>First<ol>
+            <li>First-first</li>
+            <li>First-second<ol>
+                    <li>First-second-first</li>
+                    <li>First-second-second</li>
+                </ol>
+            </li>
+            <li>First-third</li>
+        </ol>
+    </li>
+    <li>Second<ol>
+            <li>Second-first</li>
+            <li>Second-second</li>
+        </ol>
+    </li>
+    <li>Third</li>
+</ol>
+
+<p>Text after the list</p>
+
+<h2>Term definition</h2>
+
+<p>Text before term list</p>
+
+<dl>
+    <dt>First Term</dt>
+    <dd>This is the definition of the first term.</dd>
+    <dt>Second Term</dt>
+    <dd>This is one definition of the second term.</dd>
+    <dd>This is another definition of the second term.</dd>
+</dl>
+
+<p>Text after term list</p>
+
+<h2>Horizontal rule</h2>
+
+<p>Text before horizontal rule</p>
+
+<hr>
+
+<p>Text after horizontal rule</p>
+
+<h2>Image and link</h2>
+
+<p>Image without link: <img
+src="https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png"
+alt="Wikipedia"></p>
+
+<p>Link without image: <a href="https://www.wikipedia.org/">LINK</a></p>
+
+<p>Image as link: <a href="https://www.wikipedia.org/"><img
+src="https://www.wikipedia.org/portal/wikipedia.org/assets/img/Wikipedia-logo-v2.png"
+border="0"></a></p>
+
+<h2>Headers</h2>
+
+<h3>Header 3</h3>
+
+<h4>Header 4</h4>
+
+<h5>Header 5</h5>
+
+<h6>Header 6</h6>
+
+<h2>Other text formating examples</h2>
+
+<p>Line break<br>
+within<br>
+the same paragraph.</p>
+
+<p>Text can be formatted as <strong>bold</strong>, <em>italic</em>
+and <em><strong>bold-italic</strong></em>. The text can be <strike>strikethrough</strike>
+and can contain <font face="Times New Roman"><tt>code</tt></font>
+words. The <u>underline</u> is not supported by current version
+of Markdown.</p>
+
+<p>The code as paragraph can be written using PRE tag:</p>
+
+<pre>The first code line
+The second code line
+The third code line</pre>
+
+<p>At the end of the HTML document, there is the Javascript
+HTML2MD call, which will not be included in the result Markdown
+code.</p>
+
+<p><script language="JavaScript" src="html2md.js"></script></p>
+</body>
+</html>
