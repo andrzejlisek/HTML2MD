@@ -2,7 +2,7 @@
 
 The HTML2MD is the simple converter from HTML to Markdown\. It allows using many simple WYSIWYG or WYSIWYM HTML editors to mage Markdown documents\. This script was tested using Microsoft FrontPage Express, which is freware and very simple WYSIWYG HTML editor and has enough features to mahe these documents\. You can use any WYSIWYG or WYSIWYM HTML editor to make Markdown files by WYSIWYG/WYSIWYM approach, using HTML file as document source\.
 
-To convert HTML file, define **SCRIPT** tag with source as **html2md\.js** at the end of the HTML file\. In the browser there will be displayed Markdown source text istead of HTML content\. All the text elements will have escape sequences at the control characters\.
+To convert HTML file, define **SCRIPT** tag with source as **html2md\.js** at the end of the HTML file\. In the browser, there will be displayed confirmation question about converting to Markdown\. If you confirm this conversion, there will be displayed Markdown source text istead of HTML contents, otherwise, the HTML contents will be persisted\. All the text elements will have escape sequences at the control characters\.
 
 # Tag conversion
 
@@ -234,5 +234,7 @@ The third code line
 ```
 
 At the end of the HTML document, there is the Javascript HTML2MD call, which will not be included in the result Markdown code\.
+
+
 
 

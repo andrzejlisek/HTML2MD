@@ -34,6 +34,69 @@ function PrintLine()
     OutputElement.innerHTML += "\n";
 }
 
+// Convert absolute path to relative path
+function PathRelative(FilePath)
+{
+    var BasePath = window.location + "";
+    
+    var BasePath_ = BasePath.split('/');
+    var FilePath_ = FilePath.split('/');
+    
+    var RelativePossible = (BasePath_[0] == FilePath_[0]) ? true : false;
+    var I = 1;
+    var Work = false;
+    if (RelativePossible)
+    {
+        if ((BasePath_.length > I) && (FilePath_.length > I))
+        {
+            if ((BasePath_[I] == "") && (FilePath_[I] == ""))
+            {
+                Work = true;
+            }
+        }
+        while (Work)
+        {
+            Work = false;
+            if ((BasePath_.length > I) && (FilePath_.length > I))
+            {
+                if ((BasePath_[I] == "") && (FilePath_[I] == ""))
+                {
+                    I++;
+                    Work = true;
+                }
+            }
+        }
+        if ((BasePath_.length > I) && (FilePath_.length > I))
+        {
+            if (BasePath_[I] != FilePath_[I])
+            {
+                RelativePossible = false;
+            }
+        }
+    }
+
+    
+    if (RelativePossible)
+    {
+        while ((BasePath_.length > 0) && (FilePath_.length > 0) && BasePath_[0] == FilePath_[0])
+        {
+            BasePath_.splice(0, 1);
+            FilePath_.splice(0, 1);
+        }
+        while (BasePath_.length > 1)
+        {
+            FilePath_.splice(0, 0, "..");
+            BasePath_.splice(0, 1);
+        }
+        
+        return FilePath_.join("/");
+    }
+    else
+    {
+        return FilePath;
+    }
+}
+
 // Clear text from multiple spaces and end of lines
 function ClearText(X, M, Q)
 {
@@ -51,7 +114,15 @@ function ClearText(X, M, Q)
     {
         return X.replaceAll("\n", " ");
     }
-
+    if (M == 4)
+    {
+        X = X.replaceAll("\n", " ");
+        while (X != X.replaceAll("  ", " "))
+        {
+            X = X.replaceAll("  ", " ");
+        }
+        return X;
+    }
     X = X.replaceAll("\\", "\\\\");
     X = X.replaceAll("`", "\\`");
     X = X.replaceAll("*", "\\*");
@@ -215,6 +286,7 @@ function HtmlParseTable(Obj, Depth, ParagraphMode)
             break;
         case "TT":
             Print("`");
+            ParagraphMode[0] = 4;
             Children = true;
             break;
         case "PRE":
@@ -230,7 +302,7 @@ function HtmlParseTable(Obj, Depth, ParagraphMode)
             Children = true;
             break;
         case "IMG":
-            Print("![" + Obj.alt + "](" + Obj.src + " \"" + Obj.alt + "\")");
+            Print("![" + Obj.alt + "](" + PathRelative(Obj.src) + " \"" + Obj.alt + "\")");
             break;
     }
 
@@ -279,7 +351,7 @@ function HtmlParseTable(Obj, Depth, ParagraphMode)
 // Parse HTML object
 function HtmlParse(Obj, Depth, ParagraphMode)
 {
-    var ParagraphMode_ = [0, ParagraphMode[1], ParagraphMode[2], ParagraphMode[3]];
+    var ParagraphMode_ = [0, ParagraphMode[1], ParagraphMode[2], ParagraphMode[3], ParagraphMode[4]];
     var I = true;
     var Children = false;
     var Name = "";
@@ -332,10 +404,13 @@ function HtmlParse(Obj, Depth, ParagraphMode)
             PrintLine();
             break;
         case "BR":
-            ParagraphMode[1] = ValNeg(ParagraphMode[1]);
-            ParagraphMode[0] = 1;
-            Print("  ");
-            PrintLine();
+            if (ParagraphMode[4] == 0)
+            {
+                ParagraphMode[1] = ValNeg(ParagraphMode[1]);
+                ParagraphMode[0] = 1;
+                Print("  ");
+                PrintLine();
+            }
             break;
         case "H1":
             ParagraphMode[0] = 1;
@@ -426,9 +501,11 @@ function HtmlParse(Obj, Depth, ParagraphMode)
             break;
         case "IMG":
             PrintPrepare(ParagraphMode);
-            Print("![" + Obj.alt + "](" + Obj.src + " \"" + Obj.alt + "\")");
+            Print("![" + Obj.alt + "](" + PathRelative(Obj.src) + " \"" + Obj.alt + "\")");
             break;
         case "TT":
+            ParagraphMode[4] = 1;
+            ParagraphMode_[0] = 4;
             PrintPrepare(ParagraphMode);
             Print("`");
             Children = true;
@@ -439,7 +516,7 @@ function HtmlParse(Obj, Depth, ParagraphMode)
             {
                 if (Obj.childNodes[I] instanceof HTMLElement)
                 {
-                    var T = [ParagraphMode_[0], ParagraphMode[1], ParagraphMode_[2], ParagraphMode[3]];
+                    var T = [ParagraphMode_[0], ParagraphMode[1], ParagraphMode_[2], ParagraphMode[3], ParagraphMode[4]];
                     HtmlParse(Obj.childNodes[I], 1, T);
                     ParagraphMode_[0] = T[0];
                     ParagraphMode[1] = T[1];
@@ -466,7 +543,7 @@ function HtmlParse(Obj, Depth, ParagraphMode)
                 {
                     if (Obj.rows[0].cells[0].childNodes[I] instanceof HTMLElement)
                     {
-                        var T = [ParagraphMode_[0], ParagraphMode[1], ParagraphMode_[2], ParagraphMode[3]];
+                        var T = [ParagraphMode_[0], ParagraphMode[1], ParagraphMode_[2], ParagraphMode[3], ParagraphMode[4]];
                         HtmlParse(Obj.rows[0].cells[0].childNodes[I], 1, T);
                         ParagraphMode_[0] = T[0];
                         ParagraphMode[1] = T[1];
@@ -552,7 +629,7 @@ function HtmlParse(Obj, Depth, ParagraphMode)
             }
             if (Allowed)
             {
-                var T = [ParagraphMode_[0], ParagraphMode[1], ParagraphMode_[2], ParagraphMode[3]];
+                var T = [ParagraphMode_[0], ParagraphMode[1], ParagraphMode_[2], ParagraphMode[3], ParagraphMode[4]];
                 HtmlParse(Obj.childNodes[I], Depth + 1, T);
                 ParagraphMode_[0] = T[0];
                 ParagraphMode[1] = T[1];
@@ -605,6 +682,7 @@ function HtmlParse(Obj, Depth, ParagraphMode)
             Print("\")");
             break;
         case "TT":
+            ParagraphMode[4] = 0;
             Print("`");
             break;
         case "PRE":
@@ -634,11 +712,15 @@ function HtmlParse(Obj, Depth, ParagraphMode)
     }
 }
 
-HtmlParse(document.body, 0, [0, 0, [], 0]);
-
-while (document.body.childNodes.length > 0)
+if (confirm("Convert to Markdown?"))
 {
-    document.body.lastChild.remove();
+    HtmlParse(document.body, 0, [0, 0, [], 0, 0]);
+
+    while (document.body.childNodes.length > 0)
+    {
+        document.body.lastChild.remove();
+    }
+
+    document.body.appendChild(OutputElement);
 }
 
-document.body.appendChild(OutputElement);
