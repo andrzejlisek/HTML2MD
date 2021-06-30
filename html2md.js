@@ -97,7 +97,7 @@ function PathRelative(FilePath)
     }
 }
 
-// Clear text from multiple spaces and end of lines
+// Clear text from multiple spaces and EOLs
 function ClearText(X, M, Q)
 {
     if (M == 2)
@@ -155,6 +155,7 @@ function ClearText(X, M, Q)
 }
 
 
+// Absolute positive value
 function ValPos(X)
 {
     if (X < 0)
@@ -167,6 +168,7 @@ function ValPos(X)
     }
 }
 
+// Absolute negative value
 function ValNeg(X)
 {
     if (X > 0)
@@ -179,6 +181,18 @@ function ValNeg(X)
     }
 }
 
+// Length of value
+function ValLen(X)
+{
+    if (X >= 1000000) return 7;
+    if (X >= 100000) return 6;
+    if (X >= 10000) return 5;
+    if (X >= 1000) return 4;
+    if (X >= 100) return 3;
+    if (X >= 10) return 2;
+    return 1;
+}
+
 function PrintQuote(Q)
 {
     while (Q > 0)
@@ -188,42 +202,59 @@ function PrintQuote(Q)
     }
 }
 
+var PrintListPointArr = [0];
+var PrintListPointLast = 0;
+
+// Print spaces and item mark before list item
 function PrintListPoint(D, O)
 {
+    if (O)
+    {
+        PrintListPointLast = O;
+    }
+    else
+    {
+        O = PrintListPointLast;
+    }
+    var D_ = ValPos(D);
+    PrintListPointArr[D_] = 0;
+    if (D != 0)
+    {
+        if (O < 0)
+        {
+            PrintListPointArr[D_] = 2;
+        }
+        if (O > 0)
+        {
+            PrintListPointArr[D_] = ValLen(ValPos(O)) + 2;
+        }
+    }
+    while (D_ > 1)
+    {
+        Print("".padStart(PrintListPointArr[D_ - 1], ' '));
+        D_--;
+    }
+
     if (D > 0)
     {
         if (O < 0)
         {
-            while (D > 1)
-            {
-                Print("  ");
-                D--;
-            }
             Print("* ");
         }
         else
         {
-            while (D > 1)
-            {
-                Print("   ");
-                D--;
-            }
             Print(O + ". ");
         }
     }
     if (D < 0)
     {
-        while (D < 0)
+        if (O < 0)
         {
-            if (O < 0)
-            {
-                Print("  ");
-            }
-            else
-            {
-                Print("   ");
-            }
-            D++;
+            Print("  ");
+        }
+        else
+        {
+            Print("".padStart(ValLen(O) + 2, ' '));
         }
     }
 }
@@ -310,7 +341,6 @@ function HtmlParseTable(Obj, Depth, ParagraphMode)
     {
         for (I = 0; I < Obj.childNodes.length; I++)
         {
-
             HtmlParseTable(Obj.childNodes[I], Depth + 1, ParagraphMode);
         }
     }
@@ -408,7 +438,6 @@ function HtmlParse(Obj, Depth, ParagraphMode)
             {
                 ParagraphMode[1] = ValNeg(ParagraphMode[1]);
                 ParagraphMode[0] = 1;
-                Print("  ");
                 PrintLine();
             }
             break;
